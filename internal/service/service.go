@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+
 	"github.com/zsandibe/medods-service/config"
 	"github.com/zsandibe/medods-service/internal/domain"
 	"github.com/zsandibe/medods-service/internal/entity"
@@ -10,9 +12,9 @@ import (
 )
 
 type Service interface {
-	Create(guid uuid.UUID) (domain.TokenPair, error)
-	Update(sessionId uuid.UUID) (domain.TokenPair, error)
-	GetAllSessions() ([]entity.Session, error)
+	Create(ctx context.Context, guid uuid.UUID) (domain.TokenPair, error)
+	Update(ctx context.Context, sessionId uuid.UUID) (domain.TokenPair, error)
+	GetAllSessions(ctx context.Context) ([]*entity.Session, error)
 }
 
 type service struct {

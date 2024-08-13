@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"context"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/zsandibe/medods-service/internal/entity"
 
@@ -8,11 +10,11 @@ import (
 )
 
 type Repository interface {
-	Create(session entity.Session) error
-	GetSessionById(sessionId uuid.UUID) (entity.Session, error)
-	DeleteSessionById(sessionId uuid.UUID) error
-	Update(session entity.Session) error
-	GetAllSessions() ([]entity.Session, error)
+	Create(ctx context.Context, session entity.Session) error
+	GetSessionById(ctx context.Context, sessionId uuid.UUID) (*entity.Session, error)
+	DeleteSessionById(ctx context.Context, sessionId uuid.UUID) error
+	Update(ctx context.Context, session entity.Session) error
+	GetAllSessions(ctx context.Context) ([]*entity.Session, error)
 }
 
 type repositoryPostgres struct {

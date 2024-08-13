@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -45,5 +46,10 @@ func NewConfig(path string) (*Config, error) {
 		logger.Errorf("envconfig.Process(): %v", err)
 		return nil, fmt.Errorf("error processing .env file: %v", err)
 	}
+
+	if os.Getenv("DOCKER") == "true" {
+		config.Postgres.Host = "postgres"
+	}
+
 	return &config, nil
 }

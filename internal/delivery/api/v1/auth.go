@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/zsandibe/medods-service/internal/domain"
@@ -12,18 +14,21 @@ import (
 func (h *Handler) Login(c *gin.Context) {
 	var loginRequest domain.LoginRequest
 	if err := c.BindJSON(&loginRequest); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		newErrorResponse(c, http.StatusText(http.StatusBadRequest),
+			http.StatusBadRequest, fmt.Errorf("invalid request body: %v", err))
 		return
 	}
 
 	if loginRequest.Guid == uuid.Nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid GUID format"})
+		newErrorResponse(c, http.StatusText(http.StatusBadRequest),
+			http.StatusBadRequest, errors.New("invalid guid param"))
 		return
 	}
 
-	tokenPair, err := h.service.Create(loginRequest.Guid)
+	tokenPair, err := h.service.Create(c, loginRequest.Guid)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		newErrorResponse(c, http.StatusText(http.StatusInternalServerError),
+			http.StatusInternalServerError, fmt.Errorf("failed to create token pair: %v", err))
 		return
 	}
 	c.JSON(http.StatusOK, tokenPair)
@@ -32,31 +37,41 @@ func (h *Handler) Login(c *gin.Context) {
 func (h *Handler) Refresh(c *gin.Context) {
 	var refreshRequest domain.RefreshRequest
 	if err := c.BindJSON(&refreshRequest); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		newErrorResponse(c, http.StatusText(http.StatusBadRequest),
+			http.StatusBadRequest, fmt.Errorf("invalid request body: %v", err))
 		return
 	}
 
 	if refreshRequest.SessionID == uuid.Nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid SessionID format"})
+		newErrorResponse(c, http.StatusText(http.StatusBadRequest),
+			http.StatusBadRequest, errors.New("invalid session id param"))
 		return
 	}
 
-	refreshedTokenPair, err := h.service.Update(refreshRequest.SessionID)
+	refreshedTokenPair, err := h.service.Update(c, refreshRequest.SessionID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if errors.Is(err, domain.ErrSessionNotFound) {
+			newErrorResponse(c, http.StatusText(http.StatusNotFound),
+				http.StatusNotFound, errors.New("session not found"))
+			return
+		}
+		newErrorResponse(c, http.StatusText(http.StatusInternalServerError),
+			http.StatusInternalServerError, fmt.Errorf("failed to refresh session: %v", err))
 		return
 	}
 	c.JSON(http.StatusOK, refreshedTokenPair)
 }
 
 func (h *Handler) GetAllSessions(c *gin.Context) {
-	sessions, err := h.service.GetAllSessions()
+	sessions, err := h.service.GetAllSessions(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		newErrorResponse(c, http.StatusText(http.StatusInternalServerError),
+			http.StatusInternalServerError, fmt.Errorf("failed to get sessions list: %v", err))
 		return
 	}
 	if len(sessions) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Sessions not found"})
+		newErrorResponse(c, http.StatusText(http.StatusNotFound),
+			http.StatusNotFound, errors.New("session not found"))
 		return
 	}
 	c.JSON(http.StatusOK, sessions)

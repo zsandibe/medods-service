@@ -10,7 +10,7 @@ func (h *Handler) Routes() *gin.Engine {
 		auth := api.Group("/auth")
 		{
 			auth.POST("/login", h.Login)
-			auth.POST("/refresh", h.Refresh)
+			auth.PUT("/refresh", h.Refresh)
 			auth.GET("/sessions", h.GetAllSessions)
 		}
 	}

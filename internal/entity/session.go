@@ -7,9 +7,9 @@ import (
 )
 
 type Session struct {
-	Id                 uuid.UUID `bson:"id" json:"id"`
-	Guid               uuid.UUID `bson:"guid" json:"guid"`
-	HashedRefreshToken []byte    `bson:"hashed_refresh_token" json:"hashed_refresh_token"`
-	CreatedAt          time.Time `bson:"created_at" json:"created_time"`
-	UpdatedAt          time.Time `bson:"updated_at" json:"updated_time"`
+	Id                 uuid.UUID `json:"id" db:"id"`
+	Guid               uuid.UUID `json:"guid" db:"guid"`
+	HashedRefreshToken []byte    `json:"hashed_refresh_token" db:"refresh_token"`
+	CreatedAt          time.Time `json:"created_time" db:"created_at"`
+	UpdatedAt          time.Time `json:"updated_time,omitempty" db:"updated_at"`
 }

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -15,12 +16,12 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *service) GetAllSessions() ([]entity.Session, error) {
+func (s *service) GetAllSessions(ctx context.Context) ([]*entity.Session, error) {
 	logger.Info("service.GetAllSessions(): getting all sessions")
-	return s.repo.GetAllSessions()
+	return s.repo.GetAllSessions(ctx)
 }
 
-func (s *service) Create(guid uuid.UUID) (domain.TokenPair, error) {
+func (s *service) Create(ctx context.Context, guid uuid.UUID) (domain.TokenPair, error) {
 	logger.Debugf("service.Create():\nBefore: guid %v", guid)
 	session := entity.Session{
 		Id:        uuid.New(),
@@ -39,7 +40,7 @@ func (s *service) Create(guid uuid.UUID) (domain.TokenPair, error) {
 		return domain.TokenPair{}, err
 	}
 
-	if err = s.repo.Create(session); err != nil {
+	if err = s.repo.Create(ctx, session); err != nil {
 		return domain.TokenPair{}, err
 	}
 	logger.Debugf("service.Create():\nAfter: token pair %v", tokenPair)
@@ -48,19 +49,19 @@ func (s *service) Create(guid uuid.UUID) (domain.TokenPair, error) {
 	return tokenPair, nil
 }
 
-func (s *service) Update(sessionId uuid.UUID) (domain.TokenPair, error) {
+func (s *service) Update(ctx context.Context, sessionId uuid.UUID) (domain.TokenPair, error) {
 	logger.Debugf("service.Update():\nBefore: session id %v", sessionId)
-	session, err := s.repo.GetSessionById(sessionId)
+	session, err := s.repo.GetSessionById(ctx, sessionId)
 	if err != nil {
 		logger.Errorf("Error getting session: %v", err)
-		return domain.TokenPair{}, err
+		return domain.TokenPair{}, domain.ErrSessionNotFound
 	}
 	fmt.Println(session.HashedRefreshToken, "before")
 	if session.UpdatedAt.Sub(time.Now()) >= s.conf.Token.RefreshTokenAge {
-		if err = s.repo.DeleteSessionById(sessionId); err != nil {
+		if err = s.repo.DeleteSessionById(ctx, sessionId); err != nil {
 			return domain.TokenPair{}, err
 		}
-		return domain.TokenPair{}, errors.New("Refresh token expired")
+		return domain.TokenPair{}, errors.New("refresh token expired")
 	}
 
 	tokenPair, err := s.signTokenPair(session.Id, session.Guid)
@@ -75,7 +76,7 @@ func (s *service) Update(sessionId uuid.UUID) (domain.TokenPair, error) {
 		return domain.TokenPair{}, err
 	}
 
-	if err = s.repo.Update(session); err != nil {
+	if err = s.repo.Update(ctx, *session); err != nil {
 		return domain.TokenPair{}, err
 	}
 
