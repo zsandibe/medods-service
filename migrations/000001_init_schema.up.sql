@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     id UUID DEFAULT uuid_generate_v4() NOT NULL,
     guid UUID NOT NULL,
     refresh_token BYTEA NOT NULL,
+    ip VARCHAR(45) NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP
 );

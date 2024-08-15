@@ -12,9 +12,10 @@ import (
 )
 
 type Service interface {
-	Create(ctx context.Context, guid uuid.UUID) (domain.TokenPair, error)
+	Create(ctx context.Context, guid uuid.UUID, ip string) (domain.TokenPair, error)
 	Update(ctx context.Context, sessionId uuid.UUID) (domain.TokenPair, error)
 	GetAllSessions(ctx context.Context) ([]*entity.Session, error)
+	NotifyToEmail(email string, oldIp, newIp string) error
 }
 
 type service struct {

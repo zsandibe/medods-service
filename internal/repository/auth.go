@@ -16,13 +16,13 @@ import (
 
 func (r *repositoryPostgres) Create(ctx context.Context, session entity.Session) error {
 	query := `
-		INSERT INTO sessions (guid,refresh_token,created_at,updated_at) 
-		VALUES ($1, $2, $3, $4) 
+		INSERT INTO sessions (guid,refresh_token,ip,created_at,updated_at) 
+		VALUES ($1, $2, $3, $4, $5) 
 	`
 	startTime := time.Now()
 	var updatedAt sql.NullTime
 
-	_, err := r.db.ExecContext(ctx, query, &session.Guid, &session.HashedRefreshToken, &startTime, &updatedAt)
+	_, err := r.db.ExecContext(ctx, query, &session.Guid, &session.HashedRefreshToken, &session.Ip, &startTime, &updatedAt)
 	if err != nil {
 		logger.Errorf("Error in inserting message: %v", err)
 		return domain.ErrCreatingSessions
@@ -38,6 +38,7 @@ func (r *repositoryPostgres) GetSessionById(ctx context.Context, sessionId uuid.
 	query := `
 		SELECT s.id,s.guid,
 		s.refresh_token,s.created_at,
+		s.ip,
 		s.updated_at
 		FROM sessions s 
 		WHERE s.id = $1
@@ -47,6 +48,7 @@ func (r *repositoryPostgres) GetSessionById(ctx context.Context, sessionId uuid.
 		&session.Id,
 		&session.Guid,
 		&session.HashedRefreshToken,
+		&session.Ip,
 		&session.CreatedAt,
 		&updatedAt,
 	); err != nil {
@@ -105,7 +107,7 @@ func (r *repositoryPostgres) GetAllSessions(ctx context.Context) ([]*entity.Sess
 	query := `
 	SELECT id,guid,
 	refresh_token,
-	created_at,updated_at
+	ip,created_at,updated_at
 	FROM sessions
 	`
 
@@ -125,6 +127,7 @@ func (r *repositoryPostgres) GetAllSessions(ctx context.Context) ([]*entity.Sess
 			&session.Id,
 			&session.Guid,
 			&session.HashedRefreshToken,
+			&session.Ip,
 			&session.CreatedAt,
 			&updatedAt,
 		); err != nil {

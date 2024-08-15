@@ -14,6 +14,14 @@ type Config struct {
 	Server   serverConfig
 	Postgres postgresConfig
 	Token    tokenConfig
+	Smtp     smtpConfig
+}
+
+type smtpConfig struct {
+	Username string `envconfig:"SMTP_USERNAME" required:"true"`
+	Password string `envconfig:"SMTP_PASSWORD" required:"true"`
+	Port     string `envconfig:"SMTP_PORT" required:"true"`
+	Server   string `envconfig:"SMTP_SERVER" required:"true"`
 }
 
 type postgresConfig struct {

@@ -21,7 +21,7 @@ func (s *service) GetAllSessions(ctx context.Context) ([]*entity.Session, error)
 	return s.repo.GetAllSessions(ctx)
 }
 
-func (s *service) Create(ctx context.Context, guid uuid.UUID) (domain.TokenPair, error) {
+func (s *service) Create(ctx context.Context, guid uuid.UUID, ip string) (domain.TokenPair, error) {
 	logger.Debugf("service.Create():\nBefore: guid %v", guid)
 	session := entity.Session{
 		Id:        uuid.New(),

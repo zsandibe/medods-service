@@ -25,7 +25,9 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	tokenPair, err := h.service.Create(c, loginRequest.Guid)
+	ip := c.ClientIP()
+
+	tokenPair, err := h.service.Create(c, loginRequest.Guid, ip)
 	if err != nil {
 		newErrorResponse(c, http.StatusText(http.StatusInternalServerError),
 			http.StatusInternalServerError, fmt.Errorf("failed to create token pair: %v", err))
