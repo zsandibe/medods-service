@@ -26,6 +26,7 @@ func (s *service) Create(ctx context.Context, guid uuid.UUID, ip string) (domain
 	session := entity.Session{
 		Id:        uuid.New(),
 		Guid:      guid,
+		Ip:        ip,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -83,6 +84,14 @@ func (s *service) Update(ctx context.Context, sessionId uuid.UUID) (domain.Token
 	logger.Debugf("service.Update():\nAfter: updated token pairs %v", tokenPair)
 	logger.Info("service.Update(): token pairs successfully updated")
 	return tokenPair, nil
+}
+
+func (s *service) GetSessionById(ctx context.Context, sessionId uuid.UUID) (*entity.Session, error) {
+	session, err := s.repo.GetSessionById(ctx, sessionId)
+	if err != nil {
+		return nil, domain.ErrSessionNotFound
+	}
+	return session, nil
 }
 
 func (s *service) signTokenPair(sessionId uuid.UUID, guid uuid.UUID) (domain.TokenPair, error) {

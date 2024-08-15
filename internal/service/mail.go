@@ -7,11 +7,11 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-func (s *service) NotifyToEmail(email string, oldIp, newIp string) error {
+func (s *service) NotifyToEmail(oldIp, newIp string) error {
 	message := fmt.Sprintf("We noticed that you attempted to update your access token from a new IP address. Your current IP address is [%v], and the IP address from which you tried to perform the update is: [%v]", oldIp, newIp)
 	msg := gomail.NewMessage()
 	msg.SetHeader("From", s.conf.Smtp.Username)
-	msg.SetHeader("To", email)
+	msg.SetHeader("To", s.conf.Smtp.Email)
 	msg.SetHeader("Subject", "Attention!")
 	msg.SetBody("text/plain", message)
 

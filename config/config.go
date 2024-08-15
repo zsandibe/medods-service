@@ -22,6 +22,7 @@ type smtpConfig struct {
 	Password string `envconfig:"SMTP_PASSWORD" required:"true"`
 	Port     string `envconfig:"SMTP_PORT" required:"true"`
 	Server   string `envconfig:"SMTP_SERVER" required:"true"`
+	Email    string `envconfig:"SMTP_RECEIVER" required:"true"`
 }
 
 type postgresConfig struct {

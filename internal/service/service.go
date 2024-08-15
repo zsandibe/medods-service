@@ -15,7 +15,8 @@ type Service interface {
 	Create(ctx context.Context, guid uuid.UUID, ip string) (domain.TokenPair, error)
 	Update(ctx context.Context, sessionId uuid.UUID) (domain.TokenPair, error)
 	GetAllSessions(ctx context.Context) ([]*entity.Session, error)
-	NotifyToEmail(email string, oldIp, newIp string) error
+	NotifyToEmail(oldIp, newIp string) error
+	GetSessionById(ctx context.Context, sessionId uuid.UUID) (*entity.Session, error)
 }
 
 type service struct {

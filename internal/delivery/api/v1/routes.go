@@ -4,6 +4,7 @@ import "github.com/gin-gonic/gin"
 
 func (h *Handler) Routes() *gin.Engine {
 	router := gin.Default()
+
 	api := router.Group("/api/v1")
 	router.Use(gin.Recovery())
 	{

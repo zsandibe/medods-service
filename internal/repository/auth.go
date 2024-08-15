@@ -37,8 +37,9 @@ func (r *repositoryPostgres) GetSessionById(ctx context.Context, sessionId uuid.
 
 	query := `
 		SELECT s.id,s.guid,
-		s.refresh_token,s.created_at,
+		s.refresh_token,
 		s.ip,
+		s.created_at,
 		s.updated_at
 		FROM sessions s 
 		WHERE s.id = $1
