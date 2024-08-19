@@ -28,11 +28,11 @@ DB_NAME=medods
 ACCESS_KEY=medodskey
 ACCESS_TOKEN_AGE=1h
 REFRESH_TOKEN_AGE=720h
-SMTP_USERNAME=
+SMTP_USERNAME= ваша почта
 SMTP_PASSWORD=asdg sdfd aeas hfgh  ПРИМЕР
 SMTP_PORT=587
 SMTP_SERVER=smtp.gmail.com
-SMTP_RECEIVER=
+SMTP_RECEIVER= почта куда нужно отправить уведомление
 ```
 Так же можно воспользоваться тестовым  `.env.test` переименовав в `.env`
 
