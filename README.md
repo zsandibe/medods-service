@@ -7,10 +7,11 @@
 Используемые технологии:
 
 + Go
-+ JWT
-+ MongoDB
++ Postgresql
 + Gin
-+ Docker (для запуска mongoDB)
++ Docker-compose
++ Swagger
++ SMTP
 
 Созданный сервис имеет чистую архитектуру, что обеспечивает простое расширение его возможностей и удобное тестирование. Также в нем реализован Graceful Shutdown для правильного завершения работы сервиса.
 
@@ -18,38 +19,64 @@
 
 Создайте `.env` файл с нужными переменными  или переименуйте `.env.example`:
 ```.env
-SERVER_HOST=YOUR_SERVER_HOST
-SERVER_PORT=YOUR_SERVER_PORT
-MONGODB_URL=MONGODB_URL
-NAME_DB=DBNAME
-NAME_COLLECTION=COLLECTION_NAME
-ACCESS_KEY=YOUR_SECRET_ACCESS_KEY
-ACCESS_TOKEN_AGE=ACCESS_TOKEN_EXPIRATION
-REFRESH_TOKEN_AGE=REFRESH_TOKEN_EXPIRATION
+SERVER_PORT=7777
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_NAME=medods
+ACCESS_KEY=medodskey
+ACCESS_TOKEN_AGE=1h
+REFRESH_TOKEN_AGE=720h
+SMTP_USERNAME=
+SMTP_PASSWORD=asdg sdfd aeas hfgh  ПРИМЕР
+SMTP_PORT=587
+SMTP_SERVER=smtp.gmail.com
+SMTP_RECEIVER=
 ```
 Так же можно воспользоваться тестовым  `.env.test` переименовав в `.env`
 
 # Usage
 
-Сперва нужно запустить контейнер  mongoDB:
+Если вы хотите запустить через compose,то:
+
+* Для запуска контейнера:
+
 ```shell
-make docker-run
+make start
 ```
-Затем сам сервис:
+* Для остановки контейнера:
+
+```shell
+make stop
+```
+
+Если вручную:
+
+* Запустить докер postgres:
+
+```shell
+make postgres
+```
+
+* Создать бд:
+
+```shell
+make createdb
+```
+
+
+* Затем запуск:
+
 ```shell
 make run
 ```
-Чтобы остановить\удалить контейнер:
-```shell
-make docker-stop
-```
-```shell
-make docker-rm
-```
+
+По пути http://0.0.0.0:7777/swagger/index.html сваггер документация
 
 # Routes
 
-* POST /api/auth/login
+* POST /api/v1/auth/login
   * Возвращает пару access & refresh токенов при вводе guid в тело запроса при валидном guid
   # Тело запроса
   ```json
@@ -64,7 +91,7 @@ make docker-rm
         "refresh_token": "DAPNlaA8R3mgktccJwsy1g=="
     }
   ```
-* POST /api/auth/refresh
+* POST /api/v1/auth/refresh
   * Возвращает при вводе в тело запроса session_id пару обновленных access & refresh token
   ```json
     {
@@ -80,7 +107,7 @@ make docker-rm
   ```
 Дополнительно добавил route getAllSessions для просмотра всех сессий.
 
-* GET /api/auth/sessions
+* GET /api/v1/auth/sessions
     * Возвращает все сессии
      # Тело ответа
     ```json

@@ -83,7 +83,7 @@ func TestHandler_Login(t *testing.T) {
 					}, nil).
 					Times(1)
 			},
-			expectedCode:  http.StatusOK,
+			expectedCode:  http.StatusCreated,
 			expectedError: "",
 		},
 	}

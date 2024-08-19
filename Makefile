@@ -37,6 +37,11 @@ all-images-delete:
 	docker images -q | xargs -r docker rmi -f
 
 
+make test-v:
+	go test -v ./...
+
+make test-cover:
+	go test -cover ./...
 
 run:
 	go run cmd/main.go

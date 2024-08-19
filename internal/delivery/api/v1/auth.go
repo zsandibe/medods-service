@@ -11,6 +11,17 @@ import (
 	"github.com/google/uuid"
 )
 
+// Login godoc
+// @Summary Login
+// @Description Creates a new token pairs by guid
+// @Tags session
+// @Accept  json
+// @Produce  json
+// @Param   input  body      domain.LoginRequest  false  "Token creation guid"
+// @Success 201  {object} domain.TokenPair
+// @Failure 400  {object}  errorResponse
+// @Failure 500 {object} errorResponse
+// @Router /login [post]
 func (h *Handler) Login(c *gin.Context) {
 	var loginRequest domain.LoginRequest
 	if err := c.BindJSON(&loginRequest); err != nil {
@@ -32,9 +43,22 @@ func (h *Handler) Login(c *gin.Context) {
 			http.StatusInternalServerError, fmt.Errorf("failed to create token pair: %v", err))
 		return
 	}
-	c.JSON(http.StatusOK, tokenPair)
+	c.JSON(http.StatusCreated, tokenPair)
 }
 
+// Refresh godoc
+// @Summary Refresh token pairs
+// @Description Refreshes a new token pairs by taking a session id
+// @Tags session
+// @Accept  json
+// @Produce  json
+// @Param   input  body      domain.RefreshRequest  false  "Session updating data"
+// @Success 200  {object} domain.TokenPair
+// @Failure 400  {object}  errorResponse
+// @Faliure 403 {object}  errorResponse
+// @Failure 404  {object}  errorResponse
+// @Failure 500 {object} errorResponse
+// @Router /refresh [put]
 func (h *Handler) Refresh(c *gin.Context) {
 	var refreshRequest domain.RefreshRequest
 	if err := c.BindJSON(&refreshRequest); err != nil {
@@ -66,7 +90,7 @@ func (h *Handler) Refresh(c *gin.Context) {
 				http.StatusInternalServerError, errors.New("failed to notify to email"))
 			return
 		}
-		newErrorResponse(c, http.StatusText(http.StatusInternalServerError), http.StatusForbidden,
+		newErrorResponse(c, http.StatusText(http.StatusForbidden), http.StatusForbidden,
 			errors.New("ip address mismatch. Session update is forbidden"))
 		return
 	}
@@ -85,6 +109,15 @@ func (h *Handler) Refresh(c *gin.Context) {
 	c.JSON(http.StatusOK, refreshedTokenPair)
 }
 
+// GetAllSessions godoc
+// @Summary Get sessions list
+// @Description Getting sessions info
+// @Tags session
+// @Produce json
+// @Success 200 {object} []entity.Session
+// @Failure 404 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Router /sessions [get]
 func (h *Handler) GetAllSessions(c *gin.Context) {
 	sessions, err := h.service.GetAllSessions(c)
 	if err != nil {

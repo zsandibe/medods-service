@@ -1,0 +1,140 @@
+basePath: /api/v1/auth
+definitions:
+  domain.LoginRequest:
+    properties:
+      guid:
+        type: string
+    type: object
+  domain.RefreshRequest:
+    properties:
+      session_id:
+        type: string
+    type: object
+  domain.TokenPair:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        items:
+          type: integer
+        type: array
+    type: object
+  entity.Session:
+    properties:
+      created_time:
+        type: string
+      guid:
+        type: string
+      hashed_refresh_token:
+        items:
+          type: integer
+        type: array
+      id:
+        type: string
+      ip:
+        type: string
+      updated_time:
+        type: string
+    type: object
+  v1.errorResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+host: 0.0.0.0:7777
+info:
+  contact: {}
+  description: This is basic server for a generating JWT tokens.
+  title: Medods test task
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new token pairs by guid
+      parameters:
+      - description: Token creation guid
+        in: body
+        name: input
+        schema:
+          $ref: '#/definitions/domain.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.TokenPair'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Login
+      tags:
+      - session
+  /refresh:
+    put:
+      consumes:
+      - application/json
+      description: Refreshes a new token pairs by taking a session id
+      parameters:
+      - description: Session updating data
+        in: body
+        name: input
+        schema:
+          $ref: '#/definitions/domain.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.TokenPair'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Refresh token pairs
+      tags:
+      - session
+  /sessions:
+    get:
+      description: Getting sessions info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Session'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Get sessions list
+      tags:
+      - session
+swagger: "2.0"
