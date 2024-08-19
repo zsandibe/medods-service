@@ -107,7 +107,7 @@ func (s *service) signTokenPair(sessionId uuid.UUID, guid uuid.UUID) (domain.Tok
 	signedAccessToken, err := accessToken.SignedString([]byte(s.conf.Token.AccessKey))
 	if err != nil {
 		fmt.Println(err)
-		return domain.TokenPair{}, errors.New("Failed to signed")
+		return domain.TokenPair{}, errors.New("failed to signed")
 	}
 	refreshToken := uuid.New()
 

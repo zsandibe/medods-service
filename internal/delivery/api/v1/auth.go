@@ -61,12 +61,14 @@ func (h *Handler) Refresh(c *gin.Context) {
 	}
 
 	if session.Ip != c.ClientIP() {
-		err := h.service.NotifyToEmail(session.Ip, "127.234.0.0")
-		if err != nil {
+		if err := h.service.NotifyToEmail(session.Ip, c.ClientIP()); err != nil {
 			newErrorResponse(c, http.StatusText(http.StatusInternalServerError),
 				http.StatusInternalServerError, errors.New("failed to notify to email"))
 			return
 		}
+		newErrorResponse(c, http.StatusText(http.StatusInternalServerError), http.StatusForbidden,
+			errors.New("ip address mismatch. Session update is forbidden"))
+		return
 	}
 
 	refreshedTokenPair, err := h.service.Update(c, refreshRequest.SessionID)

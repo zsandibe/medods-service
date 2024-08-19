@@ -12,8 +12,8 @@ import (
 
 type Config struct {
 	Server   serverConfig
-	Postgres postgresConfig
-	Token    tokenConfig
+	Postgres PostgresConfig
+	Token    TokenConfig
 	Smtp     smtpConfig
 }
 
@@ -25,7 +25,7 @@ type smtpConfig struct {
 	Email    string `envconfig:"SMTP_RECEIVER" required:"true"`
 }
 
-type postgresConfig struct {
+type PostgresConfig struct {
 	User     string `envconfig:"DB_USER" required:"true"`
 	Password string `envconfig:"DB_PASSWORD" required:"true"`
 	Host     string `envconfig:"DB_HOST" required:"true"`
@@ -37,7 +37,7 @@ type serverConfig struct {
 	Port string `envconfig:"SERVER_PORT" required:"true"`
 }
 
-type tokenConfig struct {
+type TokenConfig struct {
 	AccessKey       string        `envconfig:"ACCESS_KEY" required:"true"`
 	AccessTokenAge  time.Duration `envconfig:"ACCESS_TOKEN_AGE" required:"true"`
 	RefreshTokenAge time.Duration `envconfig:"REFRESH_TOKEN_AGE" required:"true"`

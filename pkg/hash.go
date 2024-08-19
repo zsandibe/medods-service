@@ -11,5 +11,6 @@ func GetHashFromToken(token []byte) ([]byte, error) {
 	if err != nil {
 		return nil, errors.New("failed to generate hash from token")
 	}
+
 	return bytes, nil
 }
